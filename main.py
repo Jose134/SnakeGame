@@ -62,24 +62,27 @@ def update ():
         key = win.checkKey()
         
         print key
-        if (key == "W"):
+        if (key == "w"):
+            print("I'm in here")
             playerDirX = 0
             playerDirY = -1
-        elif (key == "A"):
+        elif (key == "a"):
             playerDirX = -1
             playerDirY = 0
-        elif (key == "S"):
+        elif (key == "s"):
             playerDirX = 0
             playerDirY = 1
-        elif (key == "D"):
+        elif (key == "d"):
             playerDirX = 1
             playerDirY = 0
  
+        print(playerDirX)
+        print(playerDirY)
         player.move(playerDirX, playerDirY)
         
         #Tail Collision
         for i in range(len(player.tail)):
-            if ((player.x == player.tail[i].x) and (player.y == player[tail].y)):
+            if ((player.x == player.tail[i].x) and (player.y == player.tail[i].y)):
                 player.tail = [0]
 
         #Food Collision
