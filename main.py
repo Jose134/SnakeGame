@@ -12,6 +12,7 @@ class Snake:
         self.tail = []
         self.lastTail = Point(x - length, y)
         self.prevHead = Point(x, y)
+        self.eat = False
 
         for i in range(1, length + 1):
             pos = Point(x - i, y)
@@ -23,8 +24,12 @@ class Snake:
     def move (self, dirX, dirY):
         #saves head and tail position
         self.prevHead = Point(self.x, self.y)
-        self.lastTail = self.tail.pop()
-        
+        if (self.eat):
+            self.lastTail = self.tail[len(self.tail) - 1]
+            self.eat = False
+        else:        
+            self.lastTail = self.tail.pop()
+
         #moves tail to head and adds dirX and dirY to the head position
         self.tail.insert(0, Point(self.x, self.y))
         self.x += dirX
@@ -52,7 +57,35 @@ class Snake:
 
 def update ():
     while True:
-        player.move(1, 0)
+        #Input
+        global playerDirX, playerDirY
+        key = win.checkKey()
+        
+        print key
+        if (key == "W"):
+            playerDirX = 0
+            playerDirY = -1
+        elif (key == "A"):
+            playerDirX = -1
+            playerDirY = 0
+        elif (key == "S"):
+            playerDirX = 0
+            playerDirY = 1
+        elif (key == "D"):
+            playerDirX = 1
+            playerDirY = 0
+ 
+        player.move(playerDirX, playerDirY)
+        
+        #Tail Collision
+        for i in range(len(player.tail)):
+            if ((player.x == player.tail[i].x) and (player.y == player[tail].y)):
+                player.tail = [0]
+
+        #Food Collision
+        if (player.x == food.x and player.y == food.y):
+            player.eat = True
+
         draw()
         time.sleep(1/framerate)
 
@@ -67,7 +100,7 @@ def draw ():
             gridSquare.draw(win)
     
     #Draws the head
-    head = Rectangle(Point(player.x * scl, player.y * scl), Point(player.x*scl + scl, player.y*scl + scl))
+    head = Rectangle(Point(player.x*scl, player.y*scl), Point(player.x*scl + scl, player.y*scl + scl))
     head.setFill("red")
     head.draw(win)
 
@@ -77,7 +110,17 @@ def draw ():
         tail.setFill(color_rgb(200, 200, 200))
         tail.draw(win)
 
+    #Draws the food
+    foodRect = Rectangle(Point(food.x*scl, food.y*scl), Point(food.x*scl + scl, food.y*scl + scl))
+    foodRect.setFill("green")
+    foodRect.draw(win)
 
+lastKey = ""
 
 player = Snake(gridSize/2, gridSize/2, 3)
+playerDirX = 1
+playerDirY = 0
+
+food = Point(10, 10)
+
 update()
