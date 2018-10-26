@@ -1,18 +1,32 @@
 from graphics import *
 
-framerate = 5
+framerate = 5.0
 scl = 20 #Size of the grid's square
 gridSize = 32 #Amount of squares in the grid
 win = GraphWin("Snake Game", gridSize*scl + 1, gridSize*scl + 1)
+
+grid = [[0 for x in range(gridSize)] for y in range(gridSize)]
+
+for i in range(gridSize):
+    for j in range(gridSize):
+        grid[i][j] = Rectangle(Point(i*scl, j*scl), Point(i*scl + scl, j*scl + scl))
+        grid[i][j].setFill("black")
+        grid[i][j].setFill(color_rgb(40, 40, 40))
+        grid[i][j].draw(win)
 
 class Snake:
     def __init__ (self, x, y, length):
         self.x = x
         self.y = y
         self.tail = []
+        
         self.lastTail = Point(x - length, y)
         self.prevHead = Point(x, y)
         self.eat = False
+
+        self.headGraph = Rectangle(Point(x*scl, y*scl), Point(x*scl + scl, y*scl + scl))
+        self.headGraph.setFill("red")
+        self.headGraph.draw(win)
 
         for i in range(1, length + 1):
             pos = Point(x - i, y)
@@ -20,6 +34,8 @@ class Snake:
             square = Rectangle(Point(pos.x*scl, pos.y*scl), Point(pos.x*scl + scl, pos.y*scl + scl))
             square.setFill(color_rgb(200, 200, 200))
             square.draw(win)
+            if (i == length):
+                self.lastTailGraph = square
 
     def move (self, dirX, dirY):
         #saves head and tail position
@@ -35,25 +51,11 @@ class Snake:
         self.x += dirX
         self.y += dirY
 
-        #redraws the snake
-        self.draw()
+        #moves the graphics
+        self.headGraph.move(dirX*scl, dirY*scl)
+        dpos = Point(self.prevHead.x - self.tail[0].x, self.prevHead.y - self.tail[0].y)
+        self.lastTailGraph.move(dpos.x*scl, dpos.y*scl)
 
-    def draw (self):
-        #Fills the last tail position with a grid square
-        gridFill = Rectangle(Point(self.lastTail.x*scl, self.lastTail.y*scl), Point(self.lastTail.x*scl + scl, self.lastTail.y*scl + scl))
-        gridFill.setFill("black")
-        gridFill.setOutline(color_rgb(40, 40, 40))
-        gridFill.draw(win)
-
-        #Draws the head
-        head = Rectangle(Point(self.x*scl, self.y*scl), Point(self.x*scl + scl, self.y*scl + scl))
-        head.setFill("red")
-        head.draw(win)
-
-        #Draws the last tail moved
-        tail = Rectangle(Point(self.prevHead.x*scl, self.prevHead.y*scl), Point(self.prevHead.x*scl + scl, self.prevHead.y*scl + scl))
-        tail.setFill(color_rgb(200, 200, 200))
-        tail.draw(win)
 
 def update ():
     while True:
@@ -61,9 +63,7 @@ def update ():
         global playerDirX, playerDirY
         key = win.checkKey()
         
-        print key
         if (key == "w"):
-            print("I'm in here")
             playerDirX = 0
             playerDirY = -1
         elif (key == "a"):
@@ -76,8 +76,6 @@ def update ():
             playerDirX = 1
             playerDirY = 0
  
-        print(playerDirX)
-        print(playerDirY)
         player.move(playerDirX, playerDirY)
         
         #Tail Collision
@@ -95,23 +93,20 @@ def update ():
 
 def draw ():
     #Draws the grid
-    for i in range(gridSize):
-        for j in range(gridSize):
-            gridSquare = Rectangle(Point(i*scl, j*scl), Point(i*scl + scl, j*scl + scl))
-            gridSquare.setOutline(color_rgb(40, 40, 40))
-            gridSquare.setFill("black")
-            gridSquare.draw(win)
-    
+    #for i in range(gridSize):
+     #   for j in range(gridSize):
+            #grid[i][j].draw(win)   
+ 
     #Draws the head
     head = Rectangle(Point(player.x*scl, player.y*scl), Point(player.x*scl + scl, player.y*scl + scl))
     head.setFill("red")
-    head.draw(win)
+    #head.draw(win)
 
     #Draws the tail
     for i in range(len(player.tail)):
         tail = Rectangle(Point(player.tail[i].x*scl, player.tail[i].y*scl), Point(player.tail[i].x*scl + scl, player.tail[i].y*scl + scl))
         tail.setFill(color_rgb(200, 200, 200))
-        tail.draw(win)
+        #tail.draw(win)
 
     #Draws the food
     foodRect = Rectangle(Point(food.x*scl, food.y*scl), Point(food.x*scl + scl, food.y*scl + scl))
