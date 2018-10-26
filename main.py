@@ -14,6 +14,14 @@ for i in range(gridSize):
         grid[i][j].setFill(color_rgb(40, 40, 40))
         grid[i][j].draw(win)
 
+class SnakePart:
+    def __init__ (self, pos):
+        self.pos = pos
+        self.graphic = Rectangle(Point(self.pos.x*scl, self.pos.y*scl), Point(self.pos.x*scl + scl, self.pos.y*scl + scl))
+
+        self.graphic.setFill(color_rgb(200, 200, 200))
+        self.graphic.draw(win)
+
 class Snake:
     def __init__ (self, x, y, length):
         self.x = x
@@ -30,18 +38,17 @@ class Snake:
 
         for i in range(1, length + 1):
             pos = Point(x - i, y)
-            self.tail.append(pos)
-            square = Rectangle(Point(pos.x*scl, pos.y*scl), Point(pos.x*scl + scl, pos.y*scl + scl))
-            square.setFill(color_rgb(200, 200, 200))
-            square.draw(win)
-            if (i == length):
-                self.lastTailGraph = square
-
+            self.tail.append(SnakePart(pos))
+        
     def move (self, dirX, dirY):
         #saves head and tail position
         self.prevHead = Point(self.x, self.y)
         if (self.eat):
             self.lastTail = self.tail[len(self.tail) - 1]
+            square = Rectangle(Point(self.prevHead.x*scl, self.prevHead.y*scl), Point(self.prevHead.x*scl+scl, self.prevHead.y*scl+scl))
+            square.setFill(color_rgb(200, 200, 200))
+            square.draw(win)
+            
             self.eat = False
         else:        
             self.lastTail = self.tail.pop()
@@ -53,8 +60,6 @@ class Snake:
 
         #moves the graphics
         self.headGraph.move(dirX*scl, dirY*scl)
-        dpos = Point(self.prevHead.x - self.tail[0].x, self.prevHead.y - self.tail[0].y)
-        self.lastTailGraph.move(dpos.x*scl, dpos.y*scl)
 
 
 def update ():
@@ -80,7 +85,7 @@ def update ():
         
         #Tail Collision
         for i in range(len(player.tail)):
-            if ((player.x == player.tail[i].x) and (player.y == player.tail[i].y)):
+            if ((player.x == player.tail[i].pos.x) and (player.y == player.tail[i].pos.y)):
                 player.tail = [0]
 
         #Food Collision
@@ -92,11 +97,6 @@ def update ():
 
 
 def draw ():
-    #Draws the grid
-    #for i in range(gridSize):
-     #   for j in range(gridSize):
-            #grid[i][j].draw(win)   
- 
     #Draws the head
     head = Rectangle(Point(player.x*scl, player.y*scl), Point(player.x*scl + scl, player.y*scl + scl))
     head.setFill("red")
